@@ -1,2 +1,2 @@
 # cursedOS
-Following in the footsteps of the great Terry A. Davis... in Rust.
+Following in the footsteps of our lord and saviour, Terry A. Davis... in Rust.
