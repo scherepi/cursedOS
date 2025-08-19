@@ -9,6 +9,7 @@ use core::panic::PanicInfo;
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
 	// The _info parameter contains info about the panic's cause.
+	println!("{}". info);
 	loop {}
 }
 
