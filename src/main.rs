@@ -33,10 +33,10 @@ pub extern "C" fn _start() -> ! {
 	
 	cursed_os::init(); // run our init function to set up interrupt descriptor table, etc.
 
-	fn stack_overflow() {
+	//fn stack_overflow() {
 	// how to ungay?
-		stack_overflow();
-	}
+	//	stack_overflow();
+	//}
 	//stack_overflow();
 	
 	// trigger a page fault
