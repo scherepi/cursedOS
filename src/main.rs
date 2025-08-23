@@ -1,6 +1,6 @@
+#![no_std] // don't link the Rust standard lib
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
-#![no_std] // don't link the Rust standard lib
 #![no_main] // disable all Rust-level entry points (don't look for a main function)
 
 #[cfg(test)]
@@ -31,6 +31,23 @@ pub extern "C" fn _start() -> ! {
 	println!("Test!!"); // Call our println macro to write to the VGA buffer directly.
 	println!("It is so cool that {}", "this works");
 	
+	cursed_os::init(); // run our init function to set up interrupt descriptor table, etc.
+
+	fn stack_overflow() {
+	// how to ungay?
+		stack_overflow();
+	}
+	//stack_overflow();
+	
+	// trigger a page fault
+	unsafe {
+		*(0xdeadbeef as *mut u8) = 42;
+		*(0x40000000 as *mut u8) = 81;
+	}
+	// invoke a breakpoint exception
+	x86_64::instructions::interrupts::int3();
+
+	println!("It did not crash?");
 	loop {}
 }
 
