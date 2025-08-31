@@ -22,7 +22,7 @@ use core::panic::PanicInfo;
 fn panic(_info: &PanicInfo) -> ! {
 	// The _info parameter contains info about the panic's cause.
 	println!("{}", _info); // Right now, use the VGA buffer println macro to print panic info.
-	loop {} // Pause processes by creating an infinite loop.
+	cursed_os::hlt_loop(); // Pause processes by creating an infinite loop.
 }
 
 #[unsafe(no_mangle)] // don't mangle the name of this function when compiling, literally name it _start
@@ -40,15 +40,23 @@ pub extern "C" fn _start() -> ! {
 	//stack_overflow();
 	
 	// trigger a page fault
+	/*
 	unsafe {
 		*(0xdeadbeef as *mut u8) = 42;
 		*(0x40000000 as *mut u8) = 81;
 	}
+	*/
+	
 	// invoke a breakpoint exception
-	x86_64::instructions::interrupts::int3();
+	// x86_64::instructions::interrupts::int3();
 
+	use x86_64::registers::control::Cr3;
+
+	let (level_4_page_table, _) = Cr3::read();
+	println!("Level 4 page table at: {:?}", level_4_page_table.start_address());
+	
 	println!("It did not crash?");
-	loop {}
+	cursed_os::hlt_loop(); // From lib.rs, calls the HLT function to not do anything unless there's an interrupt.
 }
 
 
