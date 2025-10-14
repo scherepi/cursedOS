@@ -11,3 +11,6 @@ Second of all, the kernel is designed to (pseudo)randomly overwrite memory as it
 Third, the graphics engine will randomly put eyes in places there should not be eyes. You're already being watched everywhere you go, might as well have eyes on you in your home OS, too.
 
 I'm not telling you the rest. You'll have to figure them out for yourself. 
+
+<br>
+psst - part of this was made on nano running on a mac with arch linux :3
