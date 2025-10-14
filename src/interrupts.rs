@@ -82,10 +82,11 @@ pub static TIMERVAR: spin::Mutex<i32> =
 	spin::Mutex::new(1); 
 
 extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
-	print!(".");
-	let mut timervar = TIMERVAR.lock();
-	*timervar *= 2;
-	print!("{}", *timervar);
+	//print!(".");
+	//let mut timervar = TIMERVAR.lock();
+	//*timervar *= 2;
+	//print!("{}", *timervar);
+	//removing the number overflow because ts is not in use anymore and it pmo
 
 	unsafe {
 		PICS.lock()
