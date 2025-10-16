@@ -125,7 +125,12 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStac
 }
 // Manual page fault handling
 use x86_64::structures::idt::PageFaultErrorCode;
-use crate::hlt_loop;
+// Define hlt_loop locally bc it keeps on messing up when i dont
+fn hlt_loop() -> ! {
+	loop {
+		x86_64::instructions::hlt();
+	}
+}
 
 extern "x86-interrupt" fn page_fault_handler(
 	stack_frame: InterruptStackFrame,
