@@ -2,7 +2,7 @@
 name = "cursed_os"
 version = "0.1.0"
 edition = "2018"
-authors = ["Joaquin Schere <owner@jschere.com>", "v1peridae <me@v1peridae.me>"]
+authors = ["Joaquin Schere <owner@jschere.com>", "Louisa M <me@v1peridae.me>"]
 
 [dependencies]
 bootloader = { version = "0.9.8", features = ["map_physical_memory"]}
@@ -11,6 +11,7 @@ spin = "0.5.2"
 x86_64 = "0.15.2"
 pic8259 = "0.10.1"
 pc-keyboard = "0.7.0"
+linked_list_allocator = "0.9.0"
 
 [dependencies.lazy_static]
 version = "1.0"
