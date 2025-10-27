@@ -1,6 +1,6 @@
 use crate::println;
-use crate::print;
 use crate::gdt;
+use crate::shell; 
 use lazy_static::lazy_static;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
@@ -97,12 +97,13 @@ extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFr
 // Keyboard interrupt handling function:
 extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
 	use x86_64::instructions::port::Port; // Provides an interface for interacting with I/O ports
-	use spin::Mutex; // for concurrency bug prevention
-	use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1}; // so that i don't have to write the world's LONGEST FUCKING MATCH STATEMENT
+    use spin::Mutex; // for concurrency bug prevention
+    use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1, KeyCode, KeyState}; // so that i don't have to write the world's LONGEST FUCKING MATCH STATEMENT
 
 	lazy_static! {
 		static ref KEYBOARD: Mutex<Keyboard<layouts::Us104Key, ScancodeSet1>> = 
 			Mutex::new(Keyboard::new(ScancodeSet1::new(), layouts::Us104Key, HandleControl::Ignore));
+		static ref SHIFT_HELD: Mutex<bool> = Mutex::new(false);
 	}
 
 	let mut keyboard = KEYBOARD.lock();
@@ -110,10 +111,26 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStac
 	let scancode: u8 = unsafe { port.read() }; // Read the key scancode from the data port as a u8
 
 	if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
+		match (key_event.code, key_event.state) {
+			(KeyCode::LShift, KeyState::Down) | (KeyCode::RShift, KeyState::Down) => { *SHIFT_HELD.lock() = true; }
+            (KeyCode::LShift, KeyState::Up)   | (KeyCode::RShift, KeyState::Up)   => { *SHIFT_HELD.lock() = false; }
+            _ => {}
+        }
 		if let Some(key) = keyboard.process_keyevent(key_event) {
 			match key {
-				DecodedKey::Unicode(character) => print!("{}", character),
-				DecodedKey::RawKey(key) => print!("{:?}", key),
+				DecodedKey::Unicode(character) => {
+					match character {
+						'\u{1b}' => { if *SHIFT_HELD.lock() { shell::back_to_cli(); } }
+						'\n' => shell::submit_command(),     
+						'\u{8}' => shell::backspace(),       
+						c => shell::add_character(c),          
+					}
+				},
+				DecodedKey::RawKey(keycode) => { // Ignores special keys
+					if keycode == KeyCode::Escape && *SHIFT_HELD.lock() {
+						shell::back_to_cli();
+					}
+				}
 			}
 		}
 	}

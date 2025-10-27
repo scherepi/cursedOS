@@ -1,10 +1,14 @@
-#![no_std]
+#![no_std] //IDK WHY IT KEEPS ON UNDERLINING NO_STD BUT ITS WORKING FINE 
 #![feature(abi_x86_interrupt)]
 #![feature(alloc_error_handler)]
 pub mod gdt;
 pub mod interrupts;
 pub mod vga_buffer;
 pub mod memory;
+
+pub mod users;
+
+pub mod shell;
 
 extern crate alloc;
 pub mod allocator;

@@ -69,7 +69,19 @@ impl Writer {
 	pub fn write_byte(&mut self, byte: u8) {
 		match byte { // Switch statement for the u8 byte to write:
 			b'\n' => self.new_line(), // If it's just a newline char, call the newline func
-			byte => { // Otherwise...
+			0x08 => { // backspace - basically moves left and clears that cell :P
+				if self.column_position > 0 {
+					self.column_position -= 1;
+					let row = BUFFER_HEIGHT - 1;
+					let col = self.column_position;
+					let color_code = self.color_code;
+					self.buffer.chars[row][col].write(ScreenChar {
+						ascii_character: b' ',
+						color_code,
+					});
+				}
+			}
+			byte => { 
 				if self.column_position >= BUFFER_WIDTH { 
 					self.new_line(); // If we're at the end of a line, call newline 
 				}
@@ -90,7 +102,7 @@ impl Writer {
 	pub fn write_string(&mut self, s: &str) { // Basically just call the write function over and over.
 		for byte in s.bytes(){
 			match byte {
-				0x20..=0x7e | b'\n' => self.write_byte(byte), // Valid byte
+				0x20..=0x7e | b'\n' | 0x08 => self.write_byte(byte), // Valid byte
 				_ => self.write_byte(0xfe), // Invalid: Write a nothing byte.
 			}
 		}
@@ -152,4 +164,27 @@ pub fn _print(args: fmt::Arguments) {
 	interrupts::without_interrupts(|| {
 		WRITER.lock().write_fmt(args).unwrap();
 	});
+}
+
+
+pub fn clear_screen(){
+	use x86_64::instructions::interrupts;
+	interrupts::without_interrupts(||{
+		let mut writer = WRITER.lock();
+		for row in 0..BUFFER_HEIGHT{
+			writer.clear_row(row);
+		}
+		writer.column_position = 0;
+	});
+}
+
+
+
+pub const VGA_WIDTH: usize = BUFFER_WIDTH;
+pub const VGA_HEIGHT: usize = BUFFER_HEIGHT;
+
+
+
+pub fn clear_screen_full() {
+	clear_screen();
 }

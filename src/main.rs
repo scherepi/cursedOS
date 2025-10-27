@@ -14,17 +14,19 @@ pub fn test_runner(tests: &[&dyn Fn()]) {
 }
 
 
-mod vga_buffer; // Include our module for interacting with the VGA buffer, a memory-mapped hardware abstraction of the terminal.
-mod memory;
-mod gdt;
-mod interrupts;
+//mod vga_buffer; // Include our module for interacting with the VGA buffer, a memory-mapped hardware abstraction of the terminal.
+//mod memory;
+//mod gdt;
+//mod interrupts;
+//commented these out since they cause a crate and root mismatch and give duplicate macros errors
 
 extern crate alloc;
 
 
 use core::panic::PanicInfo;
 use bootloader::{BootInfo, entry_point};
-use alloc::{boxed::Box, vec, vec::Vec, rc::Rc};
+//use alloc::{boxed::Box, vec, vec::Vec, rc::Rc};
+use cursed_os::println;
 
 // This function is called on panic
 #[panic_handler]
@@ -39,16 +41,17 @@ fn panic(_info: &PanicInfo) -> ! {
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
-	use crate::memory::{BootInfoFrameAllocator};
+	use cursed_os::memory::BootInfoFrameAllocator;
 	use x86_64::VirtAddr;
-	println!("Hello World{}", "!");
+	//println!("Hello World{}", "!");
 	cursed_os::init();
 
 	let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
-    let mut mapper = unsafe { memory::init(phys_mem_offset) };
+	let mut mapper = unsafe { cursed_os::memory::init(phys_mem_offset) };
     let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
 	cursed_os::allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap init failed");
-
+	cursed_os::users::ensure_default_admin();
+	cursed_os::shell::startup_screen();
 	//uncomment to see the test
     /* let addresses = [
         0xb8000,
@@ -69,20 +72,20 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     //unsafe { page_ptr.offset(400).write_volatile(0x_f021_f077_f065_f04e) };
 
 
-	let heap_value = Box::new(41); //this is what gave us the panic
-	println!("heap_value: {:p}", heap_value);
+	//let heap_value = Box::new(41); //this is what gave us the panic
+	//println!("heap_value: {:p}", heap_value);
 
-	let mut vec = Vec::new();
-	for i in 0..500{
-		vec.push(i);
-	}
-	println!("vec at: {:p}", vec.as_slice());
+	//let mut vec = Vec::new();
+	//for i in 0..500{
+	//	vec.push(i);
+	//}
+	//println!("vec at: {:p}", vec.as_slice());
 
-	let ref_counted = Rc::new(vec![1,2,3]);
-	let cloned_ref = ref_counted.clone();
-	println!("current reference count is {}", Rc::strong_count(&cloned_ref));
-    core::mem::drop(cloned_ref);
-    println!("reference count is {} now", Rc::strong_count(&ref_counted));
+	//let ref_counted = Rc::new(vec![1,2,3]);
+	//let cloned_ref = ref_counted.clone();
+	//println!("current reference count is {}", Rc::strong_count(&cloned_ref));
+    //core::mem::drop(cloned_ref);
+    //println!("reference count is {} now", Rc::strong_count(&ref_counted));
 
 	
 
@@ -91,7 +94,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
 
 
-	println!("Didn't crash!!"); // Call our println macro to write to the VGA buffer directly.
+	//println!("Didn't crash!!"); // Call our println macro to write to the VGA buffer directly.
 	//println!("It is so cool that {}", "this works");
 	/*
 	//fn stack_overflow() {
