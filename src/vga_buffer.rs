@@ -64,6 +64,21 @@ impl fmt::Write for Writer { // Implement fmt::Write on the Writer for macro com
 	}
 }
 
+fn set_cursor_pos(row: usize, col: usize) {
+	let row = core::cmp::min(row, BUFFER_HEIGHT - 1);
+	let col = core::cmp::min(col, BUFFER_WIDTH - 1);
+	let pos = (row * BUFFER_WIDTH + col) as u16;
+	unsafe {
+		use x86_64::instructions::port::Port;
+		let mut index = Port::new(0x3D4u16);
+		let mut data  = Port::new(0x3D5u16);
+		index.write(0x0F_u8);       
+		data.write((pos & 0xFF) as u8);
+		index.write(0x0E_u8);       
+		data.write((pos >> 8) as u8);
+	}
+}
+
 impl Writer {
 	// implementation for the Writer struct.
 	pub fn write_byte(&mut self, byte: u8) {
@@ -80,6 +95,7 @@ impl Writer {
 						color_code,
 					});
 				}
+				self.sync_cursor();
 			}
 			byte => { 
 				if self.column_position >= BUFFER_WIDTH { 
@@ -95,8 +111,13 @@ impl Writer {
 					color_code,
 				});
 				self.column_position += 1; // Move the cursor one character to the right.
+				self.sync_cursor();
 			}
 		}
+	}
+
+	fn sync_cursor(&mut self) {
+		set_cursor_pos(BUFFER_HEIGHT - 1, self.column_position);
 	}
 
 	pub fn write_string(&mut self, s: &str) { // Basically just call the write function over and over.
@@ -118,6 +139,7 @@ impl Writer {
 		}
 		self.clear_row(BUFFER_HEIGHT - 1);
 		self.column_position = 0;
+		self.sync_cursor();
 	 }
 
 	 fn clear_row(&mut self, row: usize) {
@@ -175,6 +197,7 @@ pub fn clear_screen(){
 			writer.clear_row(row);
 		}
 		writer.column_position = 0;
+		set_cursor_pos(BUFFER_HEIGHT - 1, 0);
 	});
 }
 
