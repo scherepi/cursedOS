@@ -50,8 +50,8 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 	let mut mapper = unsafe { cursed_os::memory::init(phys_mem_offset) };
     let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
 	cursed_os::allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap init failed");
-	cursed_os::users::ensure_default_admin();
-	cursed_os::shell::startup_screen();
+    cursed_os::users::ensure_default_admin();
+    cursed_os::shell::startup_screen();
 	//uncomment to see the test
     /* let addresses = [
         0xb8000,

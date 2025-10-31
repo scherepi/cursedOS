@@ -61,40 +61,27 @@ pub fn execute_command(command: &str){//called when the user presses enter. basi
     match trimmed_command {
         "" => {}, 
         "help" => {
-            println!("Available commands:");
-            println!("help - you get this message!");
-            println!("clear - clear screen");
-            println!("about - about cursedOS");
-            println!("login - login to an account");
-            println!("create user - create a new account");
-            println!("create - alias for 'create user'");
-            println!("logout - logout of your account");
-            println!("whoami - show current user");
+            println!("available commands:");
+            println!("help - you get this message!"); //done
+            println!("clear - clears the screen"); //done
+            println!("about - about cursedOS"); //done-ish
+            println!("create - create user"); //done
+            println!("login - login to an account"); //done
+            println!("logout - logout of your account");//done
+            println!("whoami - show current user"); //done
+            println!("exit - exit the OS on QEMU"); //done
         },
+        "exit" => {crate::exit_qemu(crate::QemuExitCode::Success); },
         "clear" => {clear_screen();}, 
-        "about" => {println!("add some good about text here");},
-        "whoami" => {
-            let who = crate::users::current_user().unwrap_or_else(|| "guest".to_string());
-            println!("current user: {}", who);
-        }
-        "logout" => {
-            crate::users::logout();
-            println!("logged out");
-        }
-        "login" => {
-            enter_login_mode();
-            return;
-        },
-        "create" | "create user" => {
-            enter_create_user_mode();
-            return;
-        },
+        "about" => {println!("this is cursedOS, a silly OS made by silly people (and is very incomplete if you can't tell btw). might add mouse support + actual graphics in the future. for now look at ts :heavysob:");},
+        "whoami" => {let who = crate::users::current_user().unwrap_or_else(|| "a guest (make an account :p)".to_string()); println!("you are {}", who);},
+        "logout" => {crate::users::logout(); println!("logged out");},
+        "login" => {enter_login_mode(); return;},
+        "create" | "create user" => {enter_create_user_mode(); return;},
         
         _ => {println!("Unknown command: {}", trimmed_command);},
     }
 }
-
-
 
 
 pub fn submit_command(){ //when user presses enter it moves to the next line + clears the buffer for the next command
