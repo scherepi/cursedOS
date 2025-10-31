@@ -41,9 +41,10 @@ lmao probably don't try to install it on baremetal or you might kill your comput
 
 2. Install Qemu:
 <br>
-    >macOS (Homebrew): `brew install qemu`<br>
-Ubuntu/Debian: `sudo apt-get install qemu-system-x86`<br>
-I lowkey do not know how to run this on Windows :heavysob:
+
+> macOS (Homebrew): `brew install qemu`<br>
+> Ubuntu/Debian: `sudo apt-get install qemu-system-x86`<br>
+> I lowkey do not know how to run this on Windows :heavysob:
 
 3. Run:
 
