@@ -60,7 +60,7 @@ You should get something like the image
 "Lou why isn't this in main?" I am working in this with someone else so having stuff on my branch helps keep everything organised and not invasive of what they might be working on :)
 
 <br>
-"Lou why are the commits not regular" I initially wasn't intending on having this as an Athena project lmao but here we are. 
+"Lou why are the commits not regular" I initially wasn't intending on having this as an Athena project lmao but here we are. Also a heads up, I started working on this on my computer from about 1st September so that's where the time comes from.
 
 <br>
 also fun fact when i was working on this at my friend's house we built it on nano running on a mac with arch linux (this was...interesting):3
