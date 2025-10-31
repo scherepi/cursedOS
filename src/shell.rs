@@ -39,7 +39,7 @@ lazy_static! {
 
 
 pub fn startup_screen(){ //startup screen - will probably customise a lil more or something
-    println!(" CursedOS v0.1.0 ");
+    println!(" CursedOS v0.0.1 ");
     println!(" 'help' for commands ");
     print_prompt();
 }
