@@ -48,7 +48,7 @@ I lowkey do not know how to run this on Windows :heavysob:
 3. Run:
 
 ```
-qemu-system-x86_64 -drive format=raw,file=[user]/[path]/bootimage-cursed_os.bin -serial stdio -no-reboot -no-shutdown
+qemu-system-x86_64 -drive format=raw,file=/bootimage-cursed_os.bin -serial stdio -no-reboot -no-shutdown
 ```
 
 You should get something like the image
